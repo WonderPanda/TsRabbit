@@ -1,0 +1,15 @@
+{
+  "name": "TsRabbit",
+  "version": "1.0.0",
+  "description": "A sweet library for doing Rabbit stuff in Node, supercharged with TypeScript",
+  "main": "index.js",
+  "author": "Jesse Carter <jesse.r.carter@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "amqplib": "^0.5.2"
+  },
+  "devDependencies": {
+    "@types/amqplib": "^0.5.7",
+    "ts-node": "^5.0.1"
+  }
+}

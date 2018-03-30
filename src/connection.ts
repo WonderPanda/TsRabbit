@@ -3,7 +3,7 @@ import * as amqplib from 'amqplib';
 export class AmqpSession {
   private uri: string;
   private connection!: amqplib.Connection;
-  private channel!: amqplib.Channel;
+  public channel!: amqplib.Channel;
 
   constructor(uri: string) {
     this.uri = uri;

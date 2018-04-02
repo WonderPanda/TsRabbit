@@ -6,10 +6,12 @@
   "author": "Jesse Carter <jesse.r.carter@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "amqplib": "^0.5.2"
+    "amqplib": "^0.5.2",
+    "uuid": "^3.2.1"
   },
   "devDependencies": {
     "@types/amqplib": "^0.5.7",
+    "@types/uuid": "^3.4.3",
     "ts-node": "^5.0.1"
   }
 }

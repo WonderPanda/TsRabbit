@@ -64,6 +64,10 @@ export class AmqpConnection {
       this.channel.ack(msg);
     });
   }
+
+  async request() {
+  
+  }
 }
 
 interface IRpcOptions {

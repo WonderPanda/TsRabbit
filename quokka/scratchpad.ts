@@ -27,17 +27,23 @@ interface BasicResponse {
     console.log(msg.content.toString());
   });
 
+  await session.consume('consumer2', exchange, 'basicrpc.accepted', async (msg) => {
+    console.log(msg.content.toString());
+  });
+
   // Set up RPC (replier)
   await session.respond<BasicRequest, BasicResponse>(async (req) => {
     return { msg: `Hello ${req.name}` };
-  }, { exchange: 'main', bindingKey: 'basicrpc' });
+  }, { exchange, bindingKey: 'basicrpc' });
 
   // Send    
+
   await session.publish(exchange, 'basicrpc', {
-    name: 'Jesse'
-  })
+    name: 'test'
+  });
+
+  await session.publish(exchange, 'basicrpc', {
+    name: 'jesse'
+  });
 
 })();
-
-
-

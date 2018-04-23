@@ -1,6 +1,6 @@
 import * as amqplib from 'amqplib';
 
-import { AmqpConnection } from '../src/AmqpConnection';
+import { AmqpSession } from '../src/AmqpSession';
 
 const rabbitUri = 'amqp://rabbitmq:rabbitmq@localhost:5672';
 const queueName = 'testQueue';
@@ -14,7 +14,8 @@ interface BasicResponse {
 }
 
 (async () => {
-  const session = new AmqpConnection(rabbitUri);
+  const session = new AmqpSession(rabbitUri);
+  
   await session.init();
 
   const exchange = 'main';
@@ -22,28 +23,17 @@ interface BasicResponse {
   // FOR QUOKKA
   await session.channel.deleteExchange(exchange);
 
-  // Set up consumer (requester)
-  await session.consume('consumer', exchange, 'basicrpc.*', async (msg) => {
-    console.log(msg.content.toString());
-  });
-
-  await session.consume('consumer2', exchange, 'basicrpc.accepted', async (msg) => {
-    console.log(msg.content.toString());
-  });
-
   // Set up RPC (replier)
   await session.respond<BasicRequest, BasicResponse>(async (req) => {
+    console.log(req);
     return { msg: `Hello ${req.name}` };
   }, { exchange, bindingKey: 'basicrpc' });
 
   // Send    
 
-  await session.publish(exchange, 'basicrpc', {
-    name: 'test'
-  });
+  await session.publish(exchange, 'basicrpc', { message: 'hello' });
 
-  await session.publish(exchange, 'basicrpc', {
-    name: 'jesse'
-  });
+  let response = await session.request({ bindingKey: 'basicrpc', exchange }, { name: 'jesse' });
+  response
 
 })();

@@ -1,7 +1,8 @@
 import * as amqplib from 'amqplib';
 import * as uuid from 'uuid';
+import { Observable } from 'rxjs';
 
-export class AmqpConnection {
+export class AmqpSession {
   private uri: string;
   private connection!: amqplib.Connection;
   public channel!: amqplib.Channel;
@@ -36,15 +37,15 @@ export class AmqpConnection {
   }
 
   async publish(exchange: string, bindingKey: string, message: object) {
-    await this.channel.publish(exchange, bindingKey, new Buffer(JSON.stringify(message)));
+    await this.channel.publish(exchange, bindingKey, new Buffer(JSON.stringify(message)), {});
   }
 
   async respond<T, U extends object>(handler: (msg: T) => Promise<U>, options: IRpcOptions) {
-    const rpcQueue = uuid.v4();
-    await this.channel.assertQueue(rpcQueue);
-    await this.channel.bindQueue(rpcQueue, options.exchange, options.bindingKey);
+    await this.channel.assertExchange(options.exchange, 'topic');
+    const rpcQueue = await this.channel.assertQueue('');
+    await this.channel.bindQueue(rpcQueue.queue, options.exchange, options.bindingKey);
 
-    return this.channel.consume(rpcQueue, async (msg) => {
+    await this.channel.consume(rpcQueue.queue, async (msg) => {
       if (msg === null) {
         throw Error('Received null message');
       }
@@ -58,15 +59,39 @@ export class AmqpConnection {
       // TODO: Make this more generic with less assumptions about topology
       const replyExchange = msg.fields.exchange;
       const replyRoutingKey = msg.properties.replyTo ? 
-        `${msg.fields.routingKey}.accepted.${msg.properties.replyTo}` : `${msg.fields.routingKey}.accepted`;
+        `${msg.fields.routingKey}.accepted.${msg.properties.replyTo}` : 
+        `${msg.fields.routingKey}.accepted`;
 
       await this.publish(replyExchange, replyRoutingKey, response);
       this.channel.ack(msg);
     });
   }
 
-  async request() {
-  
+  async request(options: IRpcOptions, payload: object, timeout?: number) {
+    const replyTo = uuid.v4();
+    const responseKey = `${options.bindingKey}.*`;
+    const responseQueue = await this.channel.assertQueue('');
+    await this.channel.bindQueue(responseQueue.queue, options.exchange, responseKey);
+    
+    const response = new Observable((observer) => {
+      (async () => {
+        await this.channel.consume(responseQueue.queue, async (msg) => {
+          if (msg === null) {
+            observer.error(new Error('Received a null response'));
+            return;
+          }
+
+          observer.next(msg.content.toString());
+          observer.complete();
+
+          //await this.channel.deleteQueue(responseQueue.queue);
+        });
+
+        await this.publish(options.exchange, options.bindingKey, payload);
+      })();
+    });
+
+    return response.first().toPromise();
   }
 }
 

@@ -1,7 +1,7 @@
 import * as amqplib from 'amqplib';
 import * as uuid from 'uuid';
 import { Observable, Subject } from 'rxjs';
-import { Either } from './Domain';
+import { Either } from './domain';
 
 interface CorrelationMessage {
   correlationId: string;

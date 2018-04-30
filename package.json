@@ -1,18 +1,46 @@
 {
-  "name": "TsRabbit",
-  "version": "1.0.0",
-  "description": "A sweet library for doing Rabbit stuff in Node, supercharged with TypeScript",
-  "main": "index.js",
+  "name": "tsrabbit",
+  "version": "0.0.1",
+  "description": "A modern TypeScript empowered RabbitMQ client for building microservices.",
+  "main": "dist/index",
+  "typings": "dist/index",
   "author": "Jesse Carter <jesse.r.carter@gmail.com>",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/WonderPanda/TsRabbit"
+  },
+  "scripts": {
+    "build": "tsc",
+    "test": "jest",
+    "test:e2e": "jest --config ./src/test/jest-e2e.json --forceExit",
+    "test:coverage": "jest --coverage"
+  },
   "dependencies": {
     "amqplib": "^0.5.2",
-    "rxjs": "^5.5.10",
+    "rxjs": "^6.0.0",
     "uuid": "^3.2.1"
   },
   "devDependencies": {
     "@types/amqplib": "^0.5.7",
+    "@types/jest": "^22.2.3",
     "@types/uuid": "^3.4.3",
-    "ts-node": "^5.0.1"
+    "jest": "^22.4.3",
+    "ts-node": "^5.0.1",
+    "typescript": "^2.8.3"
+  },
+  "jest": {
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
+    },
+    "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json",
+      "node"
+    ]
   }
 }

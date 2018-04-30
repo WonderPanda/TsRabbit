@@ -1,6 +1,6 @@
-import { Observable } from 'rxjs/Rx';
-import { mapTo, delay } from 'rxjs/operators';
-import { race } from 'rxjs/observable/race';
+//import { Observable } from 'rxjs/Rx';
+//import { mapTo, delay } from 'rxjs/operators';
+//import { race } from 'rxjs/observable/race';
 
 
 // const future = Observable.interval(200)

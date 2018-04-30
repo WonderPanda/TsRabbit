@@ -1,7 +1,7 @@
 import * as amqplib from 'amqplib';
 import { AmqpSession } from '../src/AmqpSession';
 
-const rabbitUri = 'amqp://rabbitmq:rabbitmq@localhost:5672';
+const rabbitUri = 'amqp://rabbit:rabbit@localhost:5672';
 const queueName = 'testQueue';
 
 interface BasicRequest {

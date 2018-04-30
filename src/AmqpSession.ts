@@ -1,7 +1,7 @@
 import * as amqplib from 'amqplib';
 import * as uuid from 'uuid';
 import { Observable, Subject } from 'rxjs';
-import { Either } from './domain';
+import { first, filter, map } from 'rxjs/operators';
 
 interface CorrelationMessage {
   correlationId: string;
@@ -117,7 +117,7 @@ export class AmqpSession {
     });
   }
 
-  async request<T>(options: IRpcOptions, payload: object, timeout?: number): Promise<Either<T, any>> {
+  async request<T>(options: IRpcOptions, payload: object, timeout?: number): Promise<T | any> {
     const replyTo = uuid.v4();
     const correlationId = uuid.v4();
     const responseKey = `${options.bindingKey}.*.*`;
@@ -143,10 +143,10 @@ export class AmqpSession {
       })();
     });
 
-    return response.first().toPromise();
+    return response.pipe(first()).toPromise();
   }
 
-  async requestDirect<T extends {}>(options: IRpcOptions, payload: object, timeout?: number): Promise<Either<T, any>> {
+  async requestDirect<T extends {}>(options: IRpcOptions, payload: object, timeout?: number): Promise<T | any> {
     const correlationId = uuid.v4();
 
     await this.publish(options.exchange, options.bindingKey, payload, { 
@@ -154,10 +154,11 @@ export class AmqpSession {
       correlationId
     });
 
-    return this.messageSubject
-      .filter(x => x.correlationId === correlationId)
-      .map(x => x.message)
-      .first()
+    return this.messageSubject.pipe(
+        filter(x => x.correlationId === correlationId),
+        map(x => x.message),
+        first()
+      )
       .toPromise();
   }
 }

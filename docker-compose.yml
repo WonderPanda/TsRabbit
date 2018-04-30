@@ -1,7 +1,14 @@
 version: '3'
 
 services: 
-  cassandra:
-    image: "cassandra"
+  rabbitmq:
+    image: "rabbitmq:3-management"
+    hostname: "rabbitmq"
+    environment:
+      RABBITMQ_ERLANG_COOKIE: "SWQOKODSQALRPCLNMEQG"
+      RABBITMQ_DEFAULT_USER: "rabbit"
+      RABBITMQ_DEFAULT_PASS: "rabbit"
+      RABBITMQ_DEFAULT_VHOST: "/"
     ports:
-      - "9042:9042"
+      - "15672:15672"
+      - "5672:5672"

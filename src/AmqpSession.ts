@@ -163,7 +163,7 @@ export class AmqpSession {
   }
 }
 
-interface IRpcOptions {
+export interface IRpcOptions {
   exchange: string;
   bindingKey: string;
   inSchemaPath?: string;

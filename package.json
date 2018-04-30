@@ -1,7 +1,7 @@
 {
-  "name": "tsrabbit",
+  "name": "ts-rabbit",
   "version": "0.0.1",
-  "description": "A modern TypeScript empowered RabbitMQ client for building microservices.",
+  "description": "A modern TypeScript empowered client for communication over RabbitMQ.",
   "main": "dist/index",
   "typings": "dist/index",
   "author": "Jesse Carter <jesse.r.carter@gmail.com>",
